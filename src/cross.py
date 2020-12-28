@@ -144,16 +144,13 @@ class IntentHandler:
             self.handle_android_intent(mActivity.getIntent())
             android.activity.bind(on_new_intent=self.handle_android_intent)
 
-    def handle_android_intent(self, intent):
-        """
-        Handle incoming ACTION_SEND intents on Android.
-        """
-        if intent.getAction() != 'android.intent.action.SEND':
-            return
 
+    def handle_intent_action_send_multiple(self,intent):
+        pass
+
+    def handle_intent_action_send(self,intent):
         self.data = None
         self.error = None
-
         try:
             if intent.getData():
                 uri = intent.getData()
@@ -173,6 +170,20 @@ class IntentHandler:
                 'If it is indeed one, '
                 'please try selecting it via the file chooser instead.'
             )
+
+
+
+    def handle_android_intent(self, intent):
+        """
+        Handle incoming [ACTION_SEND, SEND_MULTIPLE] intents on Android.
+        """
+        if intent.getAction() == 'android.intent.action.SEND':
+            return self.handle_intent_action_send(intent)
+        if intent.getAction() == 'android.intent.action.SEND_MULTIPLE':
+            return self.handle_intent_action_send_multiple(intent)
+        else:
+            # TODO: Visible error for the user?
+            pass
 
     def pop(self):
         """
